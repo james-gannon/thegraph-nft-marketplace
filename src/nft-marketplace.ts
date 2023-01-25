@@ -12,7 +12,7 @@ import {
 } from "../generated/schema";
 
 export function handleItemBought(event: ItemBoughtEvent): void {
-  let itemBought = ItemBought.load(
+  /*let itemBought = ItemBought.load(
     getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
   );
   let activeItem = ActiveItem.load(
@@ -29,25 +29,31 @@ export function handleItemBought(event: ItemBoughtEvent): void {
   activeItem!.buyer = event.params.buyer;
 
   itemBought.save();
-  activeItem!.save();
+  activeItem!.save();*/
 
-  /*let entity = new ItemBought(
+  let entity = new ItemBought(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
+  let activeItem = ActiveItem.load(
+    getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
+  );
+
   entity.buyer = event.params.buyer;
   entity.nftAddress = event.params.nftAddress;
   entity.tokenId = event.params.tokenId;
   entity.price = event.params.price;
+  activeItem!.buyer = event.params.buyer;
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
 
-  entity.save();*/
+  entity.save();
+  activeItem!.save();
 }
 
 export function handleItemCanceled(event: ItemCanceledEvent): void {
-  let itemCanceled = ItemCanceled.load(
+  /*let itemCanceled = ItemCanceled.load(
     getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
   );
   let activeItem = ActiveItem.load(
@@ -67,24 +73,31 @@ export function handleItemCanceled(event: ItemCanceledEvent): void {
   );
 
   itemCanceled.save();
-  activeItem!.save();
+  activeItem!.save();*/
 
-  /*let entity = new ItemCanceled(
+  let entity = new ItemCanceled(
     event.transaction.hash.concatI32(event.logIndex.toI32())
+  );
+  let activeItem = ActiveItem.load(
+    getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
   );
   entity.seller = event.params.seller;
   entity.nftAddress = event.params.nftAddress;
   entity.tokenId = event.params.tokenId;
+  activeItem!.buyer = Address.fromString(
+    "0x000000000000000000000000000000000000dEaD" // How we decide if an item has been bought or not
+  );
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
 
-  entity.save();*/
+  entity.save();
+  activeItem!.save();
 }
 
 export function handleItemListed(event: ItemListedEvent): void {
-  let itemListed = ItemListed.load(
+  /*let itemListed = ItemListed.load(
     getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
   );
   let activeItem = ActiveItem.load(
@@ -113,21 +126,42 @@ export function handleItemListed(event: ItemListedEvent): void {
   );
 
   itemListed.save();
-  activeItem.save();
+  activeItem.save();*/
 
-  /*let entity = new ItemListed(
+  let entity = new ItemListed(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
+  let activeItem = ActiveItem.load(
+    getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
+  );
+  if (!activeItem) {
+    activeItem = new ActiveItem(
+      getIdFromEventParams(event.params.tokenId, event.params.nftAddress)
+    );
+  }
+
   entity.seller = event.params.seller;
+  activeItem.seller = event.params.seller;
+
   entity.nftAddress = event.params.nftAddress;
+  activeItem.nftAddress = event.params.nftAddress;
+
   entity.tokenId = event.params.tokenId;
+  activeItem.tokenId = event.params.tokenId;
+
   entity.price = event.params.price;
+  activeItem.price = event.params.price;
+
+  activeItem.buyer = Address.fromString(
+    "0x0000000000000000000000000000000000000000"
+  );
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
 
-  entity.save();*/
+  entity.save();
+  activeItem.save();
 }
 // Define the types of different parameters in TS
 function getIdFromEventParams(tokenId: BigInt, nftAddress: Address): string {
